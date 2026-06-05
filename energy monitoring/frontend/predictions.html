@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Predictions - Smart Energy Monitor</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <h2>EnergyAI</h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="predictions.html" class="nav-item active">
+                    <i class="fas fa-brain"></i>
+                    <span>AI Predictions</span>
+                </a>
+                <a href="devices.html" class="nav-item">
+                    <i class="fas fa-plug"></i>
+                    <span>Devices</span>
+                </a>
+                <a href="recommendations.html" class="nav-item">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Recommendations</span>
+                </a>
+                <a href="carbon.html" class="nav-item">
+                    <i class="fas fa-leaf"></i>
+                    <span>Carbon Footprint</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1>AI-Powered Predictions</h1>
+                    <p class="subtitle">Machine learning insights for energy optimization</p>
+                </div>
+                <div class="header-right">
+                    <button class="btn-primary">
+                        <i class="fas fa-sync-alt"></i> Refresh Predictions
+                    </button>
+                    <div class="user-profile">
+                        <span id="userName">Welcome, User</span>
+                    </div>
+                    <button onclick="logout()" style="background:none;border:1px solid #2a2a2a;color:#aaaaaa;padding:0.5rem 1rem;border-radius:0.5rem;cursor:pointer;font-size:0.85rem;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </header>
+
+            <!-- Prediction Cards -->
+            <section class="prediction-cards">
+                <div class="prediction-card">
+                    <div class="prediction-header">
+                        <i class="fas fa-calendar-week"></i>
+                        <h3>Next 7 Days Forecast</h3>
+                    </div>
+                    <div class="prediction-value">
+                        <span class="value" id="forecastTotalKwh">— kWh</span>
+                        <span class="confidence" id="forecastSource">Loading...</span>
+                    </div>
+                    <div class="prediction-chart" style="height:120px; position:relative;">
+                        <canvas id="weekForecastChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="prediction-card">
+                    <div class="prediction-header">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <h3>Predicted Monthly Bill</h3>
+                    </div>
+                    <div class="prediction-value">
+                        <span class="value" id="predBillTotal">—</span>
+                        <span class="confidence" id="predBillNote">Based on 7-day forecast</span>
+                    </div>
+                    <div class="bill-breakdown">
+                        <div class="breakdown-item">
+                            <span>Energy Cost</span>
+                            <span id="predBillEnergy">—</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Fixed Charge</span>
+                            <span id="predBillFixed">—</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Tax (5%)</span>
+                            <span id="predBillTax">—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="prediction-card">
+                    <div class="prediction-header">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <h3>Anomaly Detection</h3>
+                    </div>
+                    <div class="anomaly-status">
+                        <div class="status-indicator normal">
+                            <i class="fas fa-check-circle"></i>
+                            <span>All Systems Normal</span>
+                        </div>
+                        <p>No unusual patterns detected in the last 24 hours</p>
+                    </div>
+                    <div class="anomaly-history">
+                        <h4>Recent Anomalies</h4>
+                        <div class="anomaly-item">
+                            <i class="fas fa-info-circle"></i>
+                            <div>
+                                <p>Kitchen spike detected</p>
+                                <span>2 days ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ML Model Insights -->
+            <section class="dashboard-grid">
+                <div class="card large">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-area"></i> Consumption Prediction vs Actual</h3>
+                        <div class="card-actions">
+                            <span class="accuracy-badge">Accuracy: 94.2%</span>
+                        </div>
+                    </div>
+                    <div class="card-body" style="height:150px; position:relative;">
+                        <canvas id="predictionComparisonChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-robot"></i> Model Performance</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="model-metrics">
+                            <div class="metric-item">
+                                <div class="metric-circle" id="circleR2" style="--progress: 0;">
+                                    <svg viewBox="0 0 100 100">
+                                        <circle cx="50" cy="50" r="40"></circle>
+                                        <circle cx="50" cy="50" r="40" class="progress"></circle>
+                                    </svg>
+                                    <span class="metric-value" id="metricR2">—</span>
+                                </div>
+                                <p>R² Score</p>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-circle" id="circleMAE" style="--progress: 0;">
+                                    <svg viewBox="0 0 100 100">
+                                        <circle cx="50" cy="50" r="40"></circle>
+                                        <circle cx="50" cy="50" r="40" class="progress"></circle>
+                                    </svg>
+                                    <span class="metric-value" id="metricMAE">—</span>
+                                </div>
+                                <p>MAE (kW)</p>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-circle" id="circleRMSE" style="--progress: 0;">
+                                    <svg viewBox="0 0 100 100">
+                                        <circle cx="50" cy="50" r="40"></circle>
+                                        <circle cx="50" cy="50" r="40" class="progress"></circle>
+                                    </svg>
+                                    <span class="metric-value" id="metricRMSE">—</span>
+                                </div>
+                                <p>RMSE (kW)</p>
+                            </div>
+                        </div>
+                        <div class="model-info">
+                            <h4>Model Details</h4>
+                            <div class="info-row">
+                                <span>Algorithm:</span>
+                                <span id="modelAlgorithm">—</span>
+                            </div>
+                            <div class="info-row">
+                                <span>Source:</span>
+                                <span id="modelSource">—</span>
+                            </div>
+                            <div class="info-row">
+                                <span>Last Updated:</span>
+                                <span id="modelUpdated">—</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pattern Recognition -->
+            <section class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-project-diagram"></i> Usage Patterns Detected</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="pattern-list">
+                            <div class="pattern-item">
+                                <div class="pattern-icon" style="background: #FFD700;">
+                                    <i class="fas fa-sun"></i>
+                                </div>
+                                <div class="pattern-content">
+                                    <h4>Weekday Morning Peak</h4>
+                                    <p>Consistent high usage 7-9 AM on weekdays</p>
+                                    <div class="pattern-tags">
+                                        <span class="tag">Recurring</span>
+                                        <span class="tag">High Confidence</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pattern-item">
+                                <div class="pattern-icon" style="background: #ff6b35;">
+                                    <i class="fas fa-snowflake"></i>
+                                </div>
+                                <div class="pattern-content">
+                                    <h4>AC Usage Correlation</h4>
+                                    <p>AC usage increases when temperature > 28°C</p>
+                                    <div class="pattern-tags">
+                                        <span class="tag">Weather-based</span>
+                                        <span class="tag">Predictable</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pattern-item">
+                                <div class="pattern-icon" style="background: #b8960c;">
+                                    <i class="fas fa-moon"></i>
+                                </div>
+                                <div class="pattern-content">
+                                    <h4>Night-time Baseline</h4>
+                                    <p>Stable 0.3 kW consumption during 11 PM - 6 AM</p>
+                                    <div class="pattern-tags">
+                                        <span class="tag">Baseline</span>
+                                        <span class="tag">Normal</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-cloud-sun"></i> Weather Impact Analysis</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="weather-impact">
+                            <div class="weather-card">
+                                <i class="fas fa-temperature-high"></i>
+                                <h4>Temperature</h4>
+                                <p class="impact-value">+35%</p>
+                                <span>Impact on consumption</span>
+                            </div>
+                            <div class="weather-card">
+                                <i class="fas fa-tint"></i>
+                                <h4>Humidity</h4>
+                                <p class="impact-value">+12%</p>
+                                <span>Impact on consumption</span>
+                            </div>
+                        </div>
+                        <div style="height:130px; position:relative;">
+                            <canvas id="weatherImpactChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Smart Alerts -->
+            <section class="alerts-section">
+                <div class="card full-width">
+                    <div class="card-header">
+                        <h3><i class="fas fa-bell"></i> Smart Alerts & Notifications</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="alerts-grid">
+                            <div class="alert-card warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <div class="alert-content">
+                                    <h4>High Usage Predicted</h4>
+                                    <p>Tomorrow's consumption predicted to be 25% higher than average due to expected high temperature (32°C)</p>
+                                    <span class="alert-time">Predicted for tomorrow</span>
+                                </div>
+                            </div>
+                            <div class="alert-card info">
+                                <i class="fas fa-info-circle"></i>
+                                <div class="alert-content">
+                                    <h4>Optimal Time Window</h4>
+                                    <p>Best time to run washing machine: 11 PM - 6 AM (off-peak hours, 30% cheaper)</p>
+                                    <span class="alert-time">Daily recommendation</span>
+                                </div>
+                            </div>
+                            <div class="alert-card success">
+                                <i class="fas fa-check-circle"></i>
+                                <div class="alert-content">
+                                    <h4>Goal Achievement</h4>
+                                    <p>You're on track to achieve your monthly savings goal of ₹15. Keep it up!</p>
+                                    <span class="alert-time">Monthly progress</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="config.js"></script>
+    <script src="login.js"></script>
+    <script>requireAuth();</script>
+    <script src="predictions.js"></script>
+</body>
+</html>

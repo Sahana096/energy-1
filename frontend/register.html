@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - EnergyAI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000000;
+            color: #FFFFFF;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .register-wrapper {
+            display: flex;
+            width: 100%;
+            max-width: 900px;
+            min-height: 560px;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(255, 215, 0, 0.15);
+        }
+
+        .register-brand {
+            flex: 1;
+            background: linear-gradient(135deg, #111111 0%, #1a1a00 100%);
+            border: 1px solid #2a2a2a;
+            border-right: none;
+            border-radius: 1.5rem 0 0 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            text-align: middle;
+        }
+
+        .brand-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #FFD700, #b8960c);
+            border-radius: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #000;
+            margin-bottom: 1.5rem;
+        }
+
+        .register-brand h1 {
+            font-size: 2rem;
+            color: #FFD700;
+            margin-bottom: 0.75rem;
+        }
+
+        .register-brand p {
+            font-size: 0.95rem;
+            color: #aaaaaa;
+            line-height: 1.6;
+        }
+
+        .brand-features {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            width: 100%;
+        }
+
+        .brand-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            color: #aaaaaa;
+        }
+
+        .brand-feature i {
+            color: #FFD800;
+            width: 20px;
+        }
+
+        .register-form-panel {
+            flex: 1;
+            background: #111111;
+            border: 1px solid #2a2a2a;
+            border-radius: 0 1.5rem 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 3rem;
+        }
+
+        .register-form-panel h2 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .register-form-panel .subtitle {
+            color: #aaaaaa;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #aaaaaa;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaaaaa;
+            font-size: 0.9rem;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 0.85rem 1rem 0.85rem 2.75rem;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 0.6rem;
+            color: #FFFFFF;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #FFD700;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #aaaaaa;
+            background: none;
+            border: none;
+            font-size: 0.9rem;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: #2a2a2a;
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0;
+            border-radius: 2px;
+            transition: width 0.3s, background 0.3s;
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, #FFD700, #b8960c);
+            color: #000000;
+            border: none;
+            border-radius: 0.6rem;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-register:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .error-msg {
+            background: rgba(255, 107, 53, 0.15);
+            border: 1px solid rgba(255, 107, 53, 0.4);
+            color: #ff6b35;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            margin-bottom: 1.25rem;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .success-msg {
+            background: rgba(67, 233, 123, 0.15);
+            border: 1px solid rgba(67, 233, 123, 0.4);
+            color: #43e97b;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            margin-bottom: 1.25rem;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .login-link {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #aaaaaa;
+        }
+
+        .login-link a {
+            color: #FFD700;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .login-link a:hover { text-decoration: underline; }
+
+        @media (max-width: 640px) {
+            .register-brand { display: none; }
+            .register-form-panel { border-radius: 1.5rem; }
+            .register-wrapper { max-width: 420px; margin: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-wrapper">
+        <div class="register-brand">
+            <div class="brand-icon">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <h1>EnergyAI</h1>
+            <p>Start your journey to smarter energy</p>
+            <div class="brand-features">
+                <div class="brand-feature">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Real-time consumption tracking</span>
+                </div>
+                <div class="brand-feature">
+                    <i class="fas fa-brain"></i>
+                    <span>AI-powered predictions</span>
+                </div>
+                <div class="brand-feature">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Personalized recommendations</span>
+                </div>
+                <div class="brand-feature">
+                    <i class="fas fa-leaf"></i>
+                    <span>CO₂ footprint monitoring</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="register-form-panel">
+            <h2>Create Account</h2>
+            <p class="subtitle">Sign up to access your EnergyAI dashboard</p>
+
+            <div class="error-msg" id="errorMsg">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="errorText">Something went wrong.</span>
+            </div>
+
+            <div class="success-msg" id="successMsg">
+                <i class="fas fa-check-circle"></i>
+                <span id="successText">Account created successfully!</span>
+            </div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="name" placeholder="John Doe" required autocomplete="name">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" placeholder="you@example.com" required autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="Create a password" required autocomplete="new-password">
+                        <button type="button" class="toggle-password" onclick="togglePassword('password','eye1')">
+                            <i class="fas fa-eye" id="eye1"></i>
+                        </button>
+                    </div>
+                    <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="confirmPassword" placeholder="Confirm your password" required autocomplete="new-password">
+                        <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword','eye2')">
+                            <i class="fas fa-eye" id="eye2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-register" id="registerBtn">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </button>
+            </form>
+
+            <div class="login-link">
+                Already have an account? <a href="index.html">Sign In</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="register.js"></script>
+</body>
+</html>

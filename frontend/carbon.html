@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Footprint - Smart Energy Monitor</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .carbon-hero {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .carbon-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .carbon-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+        .carbon-card.highlight {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(255,215,0,0.05), transparent);
+        }
+        .carbon-icon {
+            width: 56px; height: 56px;
+            border-radius: 1rem;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: white; margin: 0 auto 1rem;
+        }
+        .carbon-value {
+            font-size: 2rem; font-weight: bold; margin-bottom: 0.25rem;
+        }
+        .carbon-label {
+            font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;
+        }
+        .carbon-sub {
+            font-size: 0.8rem; color: var(--text-secondary);
+        }
+        .comparison-badge {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.5rem 1rem; border-radius: 2rem;
+            font-size: 0.85rem; font-weight: bold; margin-top: 0.75rem;
+        }
+        .comparison-badge.better {
+            background: rgba(67, 233, 123, 0.15); color: #43e97b;
+        }
+        .comparison-badge.worse {
+            background: rgba(255, 107, 53, 0.15); color: #ff6b35;
+        }
+        .offset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .offset-card {
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            transition: transform 0.2s;
+        }
+        .offset-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-color);
+        }
+        .offset-header {
+            display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;
+        }
+        .offset-header i {
+            font-size: 1.25rem; color: var(--primary-color);
+        }
+        .offset-header h4 {
+            font-size: 0.95rem;
+        }
+        .offset-stat {
+            display: flex; justify-content: space-between;
+            font-size: 0.85rem; margin-bottom: 0.5rem;
+        }
+        .offset-stat span:first-child { color: var(--text-secondary); }
+        .offset-stat span:last-child { font-weight: bold; }
+        .goal-item {
+            display: flex; align-items: center; gap: 1rem;
+            padding: 1rem; background: rgba(255, 215, 0, 0.05);
+            border-radius: 0.75rem; margin-bottom: 0.75rem;
+        }
+        .goal-status {
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; flex-shrink: 0;
+        }
+        .goal-status.completed { background: rgba(67, 233, 123, 0.2); color: #43e97b; }
+        .goal-status.active { background: rgba(255, 215, 0, 0.2); color: var(--primary-color); }
+        .goal-info { flex: 1; }
+        .goal-info h4 { font-size: 0.95rem; margin-bottom: 0.25rem; }
+        .goal-info p { font-size: 0.8rem; color: var(--text-secondary); }
+        .goal-progress {
+            width: 100px; text-align: right;
+        }
+        .goal-progress-bar {
+            height: 8px; background: var(--border-color);
+            border-radius: 4px; overflow: hidden; margin-bottom: 0.25rem;
+        }
+        .goal-progress-fill {
+            height: 100%; background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 4px; transition: width 0.5s ease;
+        }
+        .goal-progress-text { font-size: 0.75rem; color: var(--text-secondary); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <h2>EnergyAI</h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="predictions.html" class="nav-item">
+                    <i class="fas fa-brain"></i>
+                    <span>AI Predictions</span>
+                </a>
+                <a href="devices.html" class="nav-item">
+                    <i class="fas fa-plug"></i>
+                    <span>Devices</span>
+                </a>
+                <a href="recommendations.html" class="nav-item">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Recommendations</span>
+                </a>
+                <a href="carbon.html" class="nav-item active">
+                    <i class="fas fa-leaf"></i>
+                    <span>Carbon Footprint</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <h1>Carbon Footprint</h1>
+                    <p class="subtitle">Track and reduce your environmental impact</p>
+                </div>
+                <div class="header-right">
+                    <div class="user-profile">
+                        <img src="https://ui-avatars.com/api/?name=User&background=FFD700&color=000" alt="User">
+                        <span id="userName">Welcome, User</span>
+                    </div>
+                    <button onclick="logout()" style="background:none;border:1px solid #2a2a2a;color:#aaaaaa;padding:0.5rem 1rem;border-radius:0.5rem;cursor:pointer;font-size:0.85rem;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </header>
+
+            <section class="carbon-hero">
+                <div class="carbon-card">
+                    <div class="carbon-icon" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                    <div class="carbon-value" id="todayCo2">--</div>
+                    <div class="carbon-label">Today CO₂</div>
+                    <div class="carbon-sub" id="todayKwh">-- kWh</div>
+                </div>
+                <div class="carbon-card highlight">
+                    <div class="carbon-icon" style="background: linear-gradient(135deg, #FFD700, #b8960c);">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="carbon-value" id="monthCo2">--</div>
+                    <div class="carbon-label">This Month CO₂</div>
+                    <div class="carbon-sub" id="monthKwh">-- kWh</div>
+                </div>
+                <div class="carbon-card">
+                    <div class="carbon-icon" style="background: linear-gradient(135deg, #ff6b35, #feca57);">
+                        <i class="fas fa-tree"></i>
+                    </div>
+                    <div class="carbon-value" id="yearCo2">--</div>
+                    <div class="carbon-label">This Year CO₂</div>
+                    <div class="carbon-sub" id="yearTrees">-- trees</div>
+                </div>
+                <div class="carbon-card">
+                    <div class="carbon-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <div class="carbon-value" id="vsAvg">--%</div>
+                    <div class="carbon-label">vs National Avg</div>
+                    <div class="comparison-badge" id="avgBadge">
+                        <i class="fas fa-chart-bar"></i> <span>--</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="dashboard-grid">
+                <div class="card large">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-area"></i> CO₂ Emission Trends</h3>
+                        <div class="card-actions">
+                            <button class="btn-icon" onclick="toggleTrendPeriod()" title="Toggle Weekly/Monthly">
+                                <i class="fas fa-exchange-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body" style="height:280px; position:relative;">
+                        <canvas id="carbonTrendChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-pie"></i> Emission Breakdown</h3>
+                    </div>
+                    <div class="card-body">
+                        <div style="height:200px; position:relative;">
+                            <canvas id="carbonBreakdownChart"></canvas>
+                        </div>
+                        <div class="distribution-legend" id="carbonLegend"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-bullseye"></i> Carbon Goals</h3>
+                    </div>
+                    <div class="card-body" id="goalsContainer">
+                        <p style="color:var(--text-secondary); text-align:center;">Loading goals...</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-seedling"></i> Offset Opportunities</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="offset-grid" id="offsetContainer">
+                            <p style="color:var(--text-secondary); text-align:center; grid-column:1/-1;">Loading offsets...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="config.js"></script>
+    <script src="login.js"></script>
+    <script>requireAuth();</script>
+    <script src="carbon.js"></script>
+</body>
+</html>

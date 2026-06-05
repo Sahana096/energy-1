@@ -1,0 +1,6 @@
+__pycache__/
+*.pkl
+*.keras
+*.pyc
+.env
+uploads/

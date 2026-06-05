@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Energy Monitor - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Login Overlay -->
+    <div id="loginOverlay" style="display:flex; position:fixed; inset:0; z-index:9999; background:#000; align-items:center; justify-content:center; overflow-y:auto; padding:1rem;">
+        <div style="display:flex; width:100%; max-width:900px; min-height:520px; border-radius:1.5rem; overflow:hidden; box-shadow:0 25px 60px rgba(255,215,0,0.15); flex-shrink:0;">
+            <div style="flex:1; background:linear-gradient(135deg,#111111 0%,#1a1a00 100%); border:1px solid #2a2a2a; border-right:none; border-radius:1.5rem 0 0 1.5rem; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:3rem; text-align:center;">
+                <div style="width:80px; height:80px; background:linear-gradient(135deg,#FFD700,#b8960c); border-radius:1.25rem; display:flex; align-items:center; justify-content:center; font-size:2.5rem; color:#000; margin-bottom:1.5rem;">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h1 style="font-size:2rem; color:#FFD700; margin-bottom:0.75rem;">EnergyAI</h1>
+                <p style="font-size:0.95rem; color:#aaaaaa; line-height:1.6;">Smart energy monitoring powered by AI</p>
+                <div style="margin-top:2rem; display:flex; flex-direction:column; gap:0.75rem; width:100%;">
+                    <div style="display:flex; align-items:center; gap:0.75rem; font-size:0.9rem; color:#aaaaaa;"><i class="fas fa-chart-line" style="color:#FFD700; width:20px;"></i><span>Real-time consumption tracking</span></div>
+                    <div style="display:flex; align-items:center; gap:0.75rem; font-size:0.9rem; color:#aaaaaa;"><i class="fas fa-brain" style="color:#FFD700; width:20px;"></i><span>AI-powered predictions</span></div>
+                    <div style="display:flex; align-items:center; gap:0.75rem; font-size:0.9rem; color:#aaaaaa;"><i class="fas fa-lightbulb" style="color:#FFD700; width:20px;"></i><span>Personalized recommendations</span></div>
+                    <div style="display:flex; align-items:center; gap:0.75rem; font-size:0.9rem; color:#aaaaaa;"><i class="fas fa-leaf" style="color:#FFD700; width:20px;"></i><span>CO₂ footprint monitoring</span></div>
+                </div>
+            </div>
+            <div style="flex:1; background:#111111; border:1px solid #2a2a2a; border-radius:0 1.5rem 1.5rem 0; display:flex; flex-direction:column; justify-content:center; padding:2.5rem; overflow-y:auto; max-height:100vh;">
+                <div style="display:flex; gap:0.5rem; margin-bottom:1.25rem; background:#1a1a1a; padding:0.25rem; border-radius:0.5rem;">
+                    <button type="button" onclick="switchLoginTab('user')" id="userTab" style="flex:1; padding:0.6rem; background:linear-gradient(135deg,#FFD700,#b8960c); color:#000; border:none; border-radius:0.4rem; font-size:0.9rem; font-weight:bold; cursor:pointer;">
+                        <i class="fas fa-user"></i> User Login
+                    </button>
+                    <button type="button" onclick="switchLoginTab('admin')" id="adminTab" style="flex:1; padding:0.6rem; background:transparent; color:#aaaaaa; border:none; border-radius:0.4rem; font-size:0.9rem; font-weight:bold; cursor:pointer;">
+                        <i class="fas fa-user-shield"></i> Admin Login
+                    </button>
+                </div>
+                <h2 style="font-size:1.5rem; margin-bottom:0.35rem;" id="loginTitle">Welcome back</h2>
+                <p style="color:#aaaaaa; font-size:0.85rem; margin-bottom:1rem;" id="loginSubtitle">Sign in to your EnergyAI account</p>
+                <!-- Admin credentials hint — shown only on admin tab -->
+                <div id="adminHint" style="display:none; background:rgba(255,215,0,0.08); border:1px solid rgba(255,215,0,0.25); border-radius:0.5rem; padding:0.6rem 0.9rem; margin-bottom:0.9rem; font-size:0.8rem; color:#aaaaaa;">
+                    <i class="fas fa-info-circle" style="color:#FFD700;"></i>
+                    Default: <strong style="color:#FFD700;">admin@energyai.com</strong> / <strong style="color:#FFD700;">admin123</strong>
+                </div>
+                <div id="errorMsg" style="background:rgba(255,107,53,0.15);border:1px solid rgba(255,107,53,0.4);color:#ff6b35;padding:0.6rem 0.9rem;border-radius:0.5rem;font-size:0.82rem;margin-bottom:0.9rem;display:none;align-items:center;gap:0.5rem;">
+                    <i class="fas fa-exclamation-circle"></i><span id="errorText">Invalid email or password.</span>
+                </div>
+                <form id="loginForm">
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block;font-size:0.82rem;color:#aaaaaa;margin-bottom:0.4rem;">Email</label>
+                        <div style="position:relative;">
+                            <i class="fas fa-envelope" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:#aaaaaa;font-size:0.85rem;"></i>
+                            <input type="email" id="email" required autocomplete="email" placeholder="you@example.com" style="width:100%;padding:0.75rem 1rem 0.75rem 2.6rem;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:0.6rem;color:#fff;font-size:0.9rem;outline:none;box-sizing:border-box;">
+                        </div>
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block;font-size:0.82rem;color:#aaaaaa;margin-bottom:0.4rem;">Password</label>
+                        <div style="position:relative;">
+                            <i class="fas fa-lock" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:#aaaaaa;font-size:0.85rem;"></i>
+                            <input type="password" id="password" required autocomplete="current-password" placeholder="Enter your password" style="width:100%;padding:0.75rem 1rem 0.75rem 2.6rem;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:0.6rem;color:#fff;font-size:0.9rem;outline:none;box-sizing:border-box;">
+                            <button type="button" onclick="togglePassword()" style="position:absolute;right:1rem;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaaaaa;cursor:pointer;">
+                                <i class="fas fa-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;font-size:0.82rem;">
+                        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;color:#aaaaaa;">
+                            <input type="checkbox" id="rememberMe" style="accent-color:#FFD700;"> Remember me
+                        </label>
+                        <a href="#" style="color:#FFD700;text-decoration:none;font-size:0.82rem;">Forgot password?</a>
+                    </div>
+                    <button type="submit" id="loginBtn" style="width:100%;padding:0.85rem;background:linear-gradient(135deg,#FFD700,#b8960c);color:#000;border:none;border-radius:0.6rem;font-size:0.95rem;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                </form>
+                <div style="margin-top:1.25rem;text-align:center;font-size:0.85rem;color:#aaaaaa;" id="signupLink">
+                    Don't have an account? <a href="register.html" style="color:#FFD700;text-decoration:none;font-weight:bold;">Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="appContent" class="container" style="display:none;">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <h2>EnergyAI</h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="predictions.html" class="nav-item">
+                    <i class="fas fa-brain"></i>
+                    <span>AI Predictions</span>
+                </a>
+                <a href="devices.html" class="nav-item">
+                    <i class="fas fa-plug"></i>
+                    <span>Devices</span>
+                </a>
+                <a href="recommendations.html" class="nav-item">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Recommendations</span>
+                </a>
+                <a href="carbon.html" class="nav-item">
+                    <i class="fas fa-leaf"></i>
+                    <span>Carbon Footprint</span>
+                </a>
+                <a href="users.html" class="nav-item" id="navUsers" style="display:none;">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1>Energy Dashboard</h1>
+                    <p class="subtitle" id="headerSubtitle">Real-time monitoring & AI-powered insights</p>
+                </div>
+                <div class="header-right">
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <div id="userAvatar" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#FFD700,#b8960c);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:bold;color:#000;">U</div>
+                        <span id="userName">Welcome, User</span>
+                    </div>
+                    <button onclick="logout()" style="background:none;border:1px solid #2a2a2a;color:#aaaaaa;padding:0.5rem 1rem;border-radius:0.5rem;cursor:pointer;font-size:0.85rem;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </header>
+
+            <!-- No Data State — hidden for admin -->
+            <div id="noDataContent" style="display:none; flex-direction:column; align-items:center; justify-content:center; gap:2rem; padding:3rem; text-align:center;">
+                <div style="width:90px; height:90px; background:linear-gradient(135deg,#FFD700,#b8960c); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2.5rem; color:#000;">
+                    <i class="fas fa-upload"></i>
+                </div>
+                <div>
+                    <h2 style="font-size:1.5rem; margin-bottom:0.5rem;">Upload Your Energy Data</h2>
+                    <p style="color:#aaaaaa; font-size:0.9rem; max-width:400px; line-height:1.6;">Upload your energy CSV file to get started. Your dashboard will populate with your real data.</p>
+                </div>
+                <form id="noDataUploadForm" style="max-width:400px; width:100%;">
+                    <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap; justify-content:center;">
+                        <input type="file" id="noDataFile" accept=".csv" required style="flex:1; padding:0.75rem; background:#111; border:2px dashed #FFD700; border-radius:0.75rem; color:#aaa; min-width:200px; cursor:pointer;">
+                        <button type="submit" id="noDataUploadBtn" style="padding:0.75rem 2rem; background:linear-gradient(135deg,#FFD700,#b8960c); color:#000; border:none; border-radius:0.75rem; font-weight:bold; cursor:pointer; font-size:1rem;">
+                            <i class="fas fa-upload"></i> Upload
+                        </button>
+                    </div>
+                    <div id="noDataUploadMsg" style="display:none; margin-top:0.75rem; padding:0.6rem 1rem; border-radius:0.5rem; font-size:0.85rem;"></div>
+                </form>
+            </div>
+
+            <!-- Dashboard Content (shown when data exists) -->
+            <div id="dashboardContent" style="display:none;">
+            <!-- Stats Cards -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #FFD700 0%, #b8960c 100%);">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Current Usage</h3>
+                        <p class="stat-value" id="currentUsage">— kW</p>
+                        <span class="stat-change" id="currentUsageChange" style="color:#aaa;">Loading...</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #FFD700 0%, #ff6b35 100%);">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Consumption</h3>
+                        <p class="stat-value" id="todayUsage">— kWh</p>
+                        <span class="stat-change" id="todayUsageChange" style="color:#aaa;">Loading...</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #FFD700 0%, #b8960c 100%);">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Estimated Cost</h3>
+                        <p class="stat-value" id="estimatedCost">₹—</p>
+                        <span class="stat-change" id="estimatedCostChange" style="color:#aaa;">Loading...</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #FFD700 0%, #b8960c 100%);">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>CO₂ Emissions</h3>
+                        <p class="stat-value" id="co2Saved">— kg</p>
+                        <span class="stat-change" id="co2SavedChange" style="color:#aaa;">Loading...</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Real-time Monitoring -->
+            <section class="dashboard-grid">
+                <div class="card large">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-area"></i> Real-Time Power Consumption</h3>
+                        <div class="card-actions">
+                            <button class="btn-icon" onclick="toggleLiveUpdate()">
+                                <i class="fas fa-sync-alt" id="liveIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body" style="height:150px; position:relative;">
+                        <canvas id="realtimeChart"></canvas>
+                    </div>                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-robot"></i> AI Insights</h3>
+                    </div>
+                    <div class="card-body" id="aiInsightsPanel">
+                        <div style="text-align:center;color:#555;padding:1rem;font-size:0.85rem;">
+                            <i class="fas fa-spinner fa-spin" style="color:#FFD700;"></i> Loading insights...
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Device Status & Predictions -->
+            <section class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-plug"></i> Active Devices</h3>
+                        <span class="device-count" id="activeDeviceCount">Loading...</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="device-list" id="dashboardDeviceList">
+                            <div style="text-align:center;color:#555;padding:1rem;font-size:0.85rem;">
+                                <i class="fas fa-spinner fa-spin" style="color:#FFD700;"></i> Loading devices...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-pie"></i> Energy Distribution</h3>
+                    </div>
+                    <div class="card-body">
+                        <div style="height:130px; position:relative;">
+                            <canvas id="distributionChart"></canvas>
+                        </div>
+                        <div class="distribution-legend" id="distributionLegend">
+                            <div class="legend-item">
+                                <span class="legend-color" style="background:#FFD700;"></span>
+                                <span>HVAC (40%)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color" style="background:#ff6b35;"></span>
+                                <span>Kitchen (25%)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color" style="background:#4facfe;"></span>
+                                <span>Laundry (15%)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color" style="background:#43e97b;"></span>
+                                <span>Lighting (12%)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color" style="background:#888888;"></span>
+                                <span>Other (8%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            </div><!-- end dashboardContent -->
+
+            <!-- Data Upload Section -->
+            <section id="dataUploadSection" class="dashboard-grid">
+                <div class="card large">
+                    <div class="card-header">
+                        <h3><i class="fas fa-cloud-upload-alt"></i> Upload Energy Data</h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Tab switcher -->
+                        <div style="display:flex;gap:0.5rem;margin-bottom:1.25rem;background:#1a1a1a;padding:0.25rem;border-radius:0.5rem;">
+                            <button type="button" onclick="switchUploadTab('csv')" id="tabCsv"
+                                style="flex:1;padding:0.55rem;background:linear-gradient(135deg,#FFD700,#b8960c);color:#000;border:none;border-radius:0.4rem;font-size:0.88rem;font-weight:bold;cursor:pointer;">
+                                <i class="fas fa-file-csv"></i> CSV Data
+                            </button>
+                            <button type="button" onclick="switchUploadTab('ocr')" id="tabOcr"
+                                style="flex:1;padding:0.55rem;background:transparent;color:#aaa;border:none;border-radius:0.4rem;font-size:0.88rem;font-weight:bold;cursor:pointer;">
+                                <i class="fas fa-file-image"></i> Bill Image (OCR)
+                            </button>
+                        </div>
+
+                        <!-- CSV upload panel -->
+                        <div id="panelCsv">
+                            <form id="uploadForm" style="margin-bottom:1rem;">
+                                <div style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;">
+                                    <div style="flex:1;min-width:200px;">
+                                        <label style="display:block;font-size:0.85rem;color:#aaa;margin-bottom:0.5rem;">Select CSV File</label>
+                                        <input type="file" id="dataFile" accept=".csv" required style="width:100%;padding:0.6rem;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:0.5rem;color:#fff;">
+                                    </div>
+                                    <div style="flex:1;min-width:200px;">
+                                        <label style="display:block;font-size:0.85rem;color:#aaa;margin-bottom:0.5rem;">Description (optional)</label>
+                                        <input type="text" id="fileDescription" placeholder="e.g. March meter reading" style="width:100%;padding:0.6rem;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:0.5rem;color:#fff;">
+                                    </div>
+                                    <button type="submit" id="uploadBtn" style="padding:0.6rem 1.5rem;background:linear-gradient(135deg,#FFD700,#b8960c);color:#000;border:none;border-radius:0.5rem;font-weight:bold;cursor:pointer;display:flex;align-items:center;gap:0.5rem;">
+                                        <i class="fas fa-upload"></i> Upload
+                                    </button>
+                                </div>
+                            </form>
+                            <div id="uploadMsg" style="display:none;padding:0.75rem 1rem;border-radius:0.5rem;font-size:0.85rem;margin-bottom:1rem;"></div>
+                            <div id="uploadList">
+                                <h4 style="font-size:0.9rem;color:#aaa;margin-bottom:0.75rem;">Your Uploads</h4>
+                                <div id="uploadItems" style="display:flex;flex-direction:column;gap:0.5rem;">
+                                    <p style="color:#666;font-size:0.85rem;">No uploads yet.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- OCR Bill Image panel -->
+                        <div id="panelOcr" style="display:none;">
+                            <p style="font-size:0.85rem;color:#aaa;margin-bottom:1rem;line-height:1.6;">
+                                Upload a photo of your electricity bill. The AI will extract units consumed, amount due, and billing date automatically.
+                            </p>
+                            <form id="ocrUploadForm">
+                                <div style="border:2px dashed #2a2a2a;border-radius:0.75rem;padding:1.5rem;text-align:center;margin-bottom:1rem;transition:border-color 0.2s;"
+                                     id="ocrDropZone"
+                                     ondragover="event.preventDefault();this.style.borderColor='#FFD700'"
+                                     ondragleave="this.style.borderColor='#2a2a2a'"
+                                     ondrop="handleOcrDrop(event)">
+                                    <i class="fas fa-file-invoice" style="font-size:2.5rem;color:#FFD700;margin-bottom:0.75rem;display:block;"></i>
+                                    <p style="color:#aaa;font-size:0.9rem;margin-bottom:0.75rem;">Drag & drop your bill image here, or</p>
+                                    <label style="cursor:pointer;background:rgba(255,215,0,0.1);border:1px solid #FFD700;color:#FFD700;padding:0.5rem 1.25rem;border-radius:0.5rem;font-size:0.88rem;font-weight:bold;">
+                                        <i class="fas fa-folder-open"></i> Browse File
+                                        <input type="file" id="ocrFileInput" accept=".jpg,.jpeg,.png,.bmp,.tiff" style="display:none;" onchange="previewOcrImage(this)">
+                                    </label>
+                                    <p style="color:#555;font-size:0.78rem;margin-top:0.5rem;">JPG, PNG, BMP, TIFF supported</p>
+                                </div>
+
+                                <!-- Image preview -->
+                                <div id="ocrPreview" style="display:none;margin-bottom:1rem;text-align:center;">
+                                    <img id="ocrPreviewImg" style="max-height:200px;max-width:100%;border-radius:0.5rem;border:1px solid #2a2a2a;" alt="Bill preview">
+                                    <p id="ocrPreviewName" style="font-size:0.8rem;color:#aaa;margin-top:0.4rem;"></p>
+                                </div>
+
+                                <button type="submit" id="ocrSubmitBtn"
+                                    style="width:100%;padding:0.75rem;background:linear-gradient(135deg,#FFD700,#b8960c);color:#000;border:none;border-radius:0.5rem;font-weight:bold;cursor:pointer;font-size:0.95rem;display:flex;align-items:center;justify-content:center;gap:0.5rem;">
+                                    <i class="fas fa-magic"></i> Extract Bill Data with OCR
+                                </button>
+                            </form>
+
+                            <!-- OCR result card -->
+                            <div id="ocrResult" style="display:none;margin-top:1.25rem;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:0.75rem;padding:1.25rem;">
+                                <h4 style="font-size:0.95rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;">
+                                    <i class="fas fa-check-circle" style="color:#FFD700;"></i> Extracted Bill Data
+                                    <span id="ocrConfidenceBadge" style="margin-left:auto;font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:1rem;font-weight:bold;"></span>
+                                </h4>
+                                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem;">
+                                    <div style="text-align:center;padding:0.75rem;background:#111;border-radius:0.5rem;border:1px solid #2a2a2a;">
+                                        <i class="fas fa-bolt" style="color:#FFD700;font-size:1.25rem;margin-bottom:0.4rem;display:block;"></i>
+                                        <div style="font-size:0.75rem;color:#aaa;margin-bottom:0.25rem;">Units Consumed</div>
+                                        <div id="ocrUnits" style="font-size:1.3rem;font-weight:bold;color:#FFD700;">—</div>
+                                        <div style="font-size:0.7rem;color:#555;">kWh</div>
+                                    </div>
+                                    <div style="text-align:center;padding:0.75rem;background:#111;border-radius:0.5rem;border:1px solid #2a2a2a;">
+                                        <i class="fas fa-rupee-sign" style="color:#ff6b35;font-size:1.25rem;margin-bottom:0.4rem;display:block;"></i>
+                                        <div style="font-size:0.75rem;color:#aaa;margin-bottom:0.25rem;">Amount Due</div>
+                                        <div id="ocrCost" style="font-size:1.3rem;font-weight:bold;color:#ff6b35;">—</div>
+                                        <div style="font-size:0.7rem;color:#555;">₹</div>
+                                    </div>
+                                    <div style="text-align:center;padding:0.75rem;background:#111;border-radius:0.5rem;border:1px solid #2a2a2a;">
+                                        <i class="fas fa-calendar-alt" style="color:#4facfe;font-size:1.25rem;margin-bottom:0.4rem;display:block;"></i>
+                                        <div style="font-size:0.75rem;color:#aaa;margin-bottom:0.25rem;">Bill Date</div>
+                                        <div id="ocrDate" style="font-size:1.1rem;font-weight:bold;color:#4facfe;">—</div>
+                                    </div>
+                                </div>
+                                <!-- Save to dashboard button -->
+                                <button id="ocrSaveBtn" onclick="saveOcrToData()" style="display:none;width:100%;padding:0.65rem;background:rgba(255,215,0,0.15);border:1px solid #FFD700;color:#FFD700;border-radius:0.5rem;font-weight:bold;cursor:pointer;font-size:0.88rem;">
+                                    <i class="fas fa-save"></i> Save to My Energy Data
+                                </button>
+                                <div id="ocrSaveMsg" style="display:none;margin-top:0.5rem;font-size:0.82rem;text-align:center;"></div>
+                            </div>
+
+                            <!-- Error message -->
+                            <div id="ocrError" style="display:none;margin-top:1rem;padding:0.75rem 1rem;background:rgba(255,107,53,0.1);border:1px solid rgba(255,107,53,0.3);border-radius:0.5rem;color:#ff6b35;font-size:0.85rem;"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="config.js"></script>
+    <script src="login.js"></script>
+    <script>
+        // Toggle login overlay vs dashboard on index page
+        async function checkIndexAuth() {
+            const session = sessionStorage.getItem('energyai_user') || localStorage.getItem('energyai_user');
+            const overlay    = document.getElementById('loginOverlay');
+            const appContent = document.getElementById('appContent');
+
+            if (!session) {
+                // No session — show login overlay (already visible by default)
+                if (overlay)    overlay.style.display    = 'flex';
+                if (appContent) appContent.style.display = 'none';
+                return;
+            }
+
+            // Has session — hide overlay, show app
+            if (overlay)    overlay.style.display    = 'none';
+            if (appContent) appContent.style.display = 'flex';
+            const user = JSON.parse(session);
+
+            // Set username
+            const el = document.getElementById('userName');
+            if (el) el.textContent = 'Welcome, ' + user.name;
+            const avatar = document.getElementById('userAvatar');
+            if (avatar && user.name) avatar.textContent = user.name.charAt(0).toUpperCase();
+
+            // ── Role-based UI ─────────────────────────────────────────
+            const isAdmin = user.role === 'admin' || user.email === 'admin@energyai.com';
+
+            // Show Users nav only for admin
+            const navUsers = document.getElementById('navUsers');
+            if (navUsers) navUsers.style.display = isAdmin ? 'flex' : 'none';
+
+            // Hide upload section and noData prompt for admin
+            const uploadSection = document.getElementById('dataUploadSection');
+            if (uploadSection) uploadSection.style.display = isAdmin ? 'none' : 'block';
+            const noDataContent = document.getElementById('noDataContent');
+            if (noDataContent && isAdmin) noDataContent.style.display = 'none';
+
+            // Admin manages users via users.html — redirect there
+            if (isAdmin) {
+                const navUsers = document.getElementById('navUsers');
+                if (navUsers) navUsers.style.display = 'flex';
+            }
+        }
+
+        checkIndexAuth();
+
+        // switchLoginTab is defined in login.js
+    </script>
+    <script src="script.js"></script>
+    <script>
+        // Re-initialize charts after app content becomes visible
+        // (Chart.js can't measure canvas dimensions when parent is display:none)
+        const _appObs = new MutationObserver(() => {
+            const app = document.getElementById('appContent');
+            if (app && app.style.display !== 'none') {
+                _appObs.disconnect();
+                if (typeof initializeRealtimeChart === 'function') initializeRealtimeChart();
+                if (typeof checkUserDataAndShowDashboard === 'function') checkUserDataAndShowDashboard();
+            }
+        });
+        const _appEl = document.getElementById('appContent');
+        if (_appEl) _appObs.observe(_appEl, { attributes: true, attributeFilter: ['style'] });
+    </script>

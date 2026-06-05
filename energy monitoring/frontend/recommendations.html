@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Recommendations - Smart Energy Monitor</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <h2>EnergyAI</h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="predictions.html" class="nav-item">
+                    <i class="fas fa-brain"></i>
+                    <span>AI Predictions</span>
+                </a>
+                <a href="devices.html" class="nav-item">
+                    <i class="fas fa-plug"></i>
+                    <span>Devices</span>
+                </a>
+                <a href="recommendations.html" class="nav-item active">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Recommendations</span>
+                </a>
+                <a href="carbon.html" class="nav-item">
+                    <i class="fas fa-leaf"></i>
+                    <span>Carbon Footprint</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <h1>AI Recommendations</h1>
+                    <p class="subtitle">Personalized energy-saving suggestions</p>
+                </div>
+                <div class="header-right">
+                    <div class="savings-badge">
+                        <i class="fas fa-piggy-bank"></i>
+                        <span>Potential Savings: ₹45/month</span>
+                    </div>
+                    <div class="user-profile">
+                        <span id="userName">Welcome, User</span>
+                    </div>
+                    <button onclick="logout()" style="background:none;border:1px solid #2a2a2a;color:#aaaaaa;padding:0.5rem 1rem;border-radius:0.5rem;cursor:pointer;font-size:0.85rem;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </header>
+
+            <section class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-calculator"></i> Savings Calculator</h3>
+                    </div>
+                    <div class="card-body" id="savingsCalculator">
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label style="display:block;font-size:0.85rem;color:#aaaaaa;margin-bottom:0.5rem;">Monthly kWh Usage</label>
+                            <input type="number" id="calcKwh" value="450" style="width:100%;padding:0.75rem;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:0.5rem;color:#fff;">
+                        </div>
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label style="display:block;font-size:0.85rem;color:#aaaaaa;margin-bottom:0.5rem;">Electricity Rate (₹/kWh)</label>
+                            <input type="number" id="calcRate" value="0.15" step="0.01" style="width:100%;padding:0.75rem;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:0.5rem;color:#fff;">
+                        </div>
+                        <div class="form-group" style="margin-bottom:1rem;">
+                            <label style="display:block;font-size:0.85rem;color:#aaaaaa;margin-bottom:0.5rem;">Desired Reduction (%)</label>
+                            <input type="range" id="calcReduction" min="5" max="50" value="15" style="width:100%;accent-color:#FFD700;">
+                            <div style="text-align:center;color:#FFD700;font-weight:bold;margin-top:0.25rem;" id="calcReductionVal">15%</div>
+                        </div>
+                        <div style="background:rgba(255,215,0,0.1);border-radius:0.75rem;padding:1rem;text-align:center;margin-top:1rem;">
+                            <div style="font-size:0.85rem;color:#aaaaaa;">Potential Monthly Savings</div>
+                            <div style="font-size:2rem;font-weight:bold;color:#FFD700;" id="calcSavings">₹10.13</div>
+                            <div style="font-size:0.85rem;color:#43e97b;" id="calcCo2">~27 kg CO₂ saved</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-pie"></i> Your Impact</h3>
+                    </div>
+                    <div class="card-body" id="impactTracker">
+                        <div style="display:flex;flex-direction:column;gap:1rem;">
+                            <div style="display:flex;align-items:center;gap:1rem;">
+                                <div style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#FFD700,#b8960c);display:flex;align-items:center;justify-content:center;font-size:1.25rem;color:#000;">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size:1.25rem;font-weight:bold;">₹142</div>
+                                    <div style="font-size:0.8rem;color:#aaaaaa;">Saved this year</div>
+                                </div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:1rem;">
+                                <div style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#43e97b,#38f9d7);display:flex;align-items:center;justify-content:center;font-size:1.25rem;color:#000;">
+                                    <i class="fas fa-leaf"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size:1.25rem;font-weight:bold;">380 kg</div>
+                                    <div style="font-size:0.8rem;color:#aaaaaa;">CO₂ prevented</div>
+                                </div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:1rem;">
+                                <div style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#ff6b35,#feca57);display:flex;align-items:center;justify-content:center;font-size:1.25rem;color:#000;">
+                                    <i class="fas fa-bolt"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size:1.25rem;font-weight:bold;">950 kWh</div>
+                                    <div style="font-size:0.8rem;color:#aaaaaa;">Energy reduced</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="recommendations-section" id="recommendationsContainer">
+                <div class="recommendation-card priority-high">
+                    <div class="recommendation-header">
+                        <div class="priority-badge high">High Priority</div>
+                        <div class="savings-amount">Save ₹18/month</div>
+                    </div>
+                    <div class="recommendation-content">
+                        <div class="recommendation-icon">
+                            <i class="fas fa-snowflake"></i>
+                        </div>
+                        <div class="recommendation-details">
+                            <h3>Optimize AC Temperature Settings</h3>
+                            <p>Your AC is set to 20°C during peak hours. Increasing to 24°C can reduce consumption by 30% without compromising comfort.</p>
+                            <div class="recommendation-actions">
+                                <button class="btn-primary" onclick="applyRec(this)">Apply Now</button>
+                                <button class="btn-secondary">Learn More</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="recommendation-impact">
+                        <div class="impact-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>120 kWh/month</span>
+                        </div>
+                        <div class="impact-item">
+                            <i class="fas fa-leaf"></i>
+                            <span>45 kg CO₂ saved</span>
+                        </div>
+                        <div class="impact-item">
+                            <i class="fas fa-star"></i>
+                            <span>Impact: 9.2/10</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recommendation-card priority-high">
+                    <div class="recommendation-header">
+                        <div class="priority-badge high">High Priority</div>
+                        <div class="savings-amount">Save ₹12/month</div>
+                    </div>
+                    <div class="recommendation-content">
+                        <div class="recommendation-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="recommendation-details">
+                            <h3>Shift to Off-Peak Hours</h3>
+                            <p>Run washing machine and dishwasher between 11 PM - 6 AM to take advantage of 40% lower electricity rates.</p>
+                            <div class="recommendation-actions">
+                                <button class="btn-primary" onclick="applyRec(this)">Set Schedule</button>
+                                <button class="btn-secondary">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="recommendation-impact">
+                        <div class="impact-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>80 kWh/month</span>
+                        </div>
+                        <div class="impact-item">
+                            <i class="fas fa-dollar-sign"></i>
+                            <span>40% cost reduction</span>
+                        </div>
+                        <div class="impact-item">
+                            <i class="fas fa-star"></i>
+                            <span>Impact: 8.5/10</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recommendation-card priority-medium">
+                    <div class="recommendation-header">
+                        <div class="priority-badge medium">Medium Priority</div>
+                        <div class="savings-amount">Save ₹8/month</div>
+                    </div>
+                    <div class="recommendation-content">
+                        <div class="recommendation-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="recommendation-details">
+                            <h3>Upgrade to Smart LED Bulbs</h3>
+                            <p>Replace 8 traditional bulbs with smart LEDs. They use 75% less energy and can be automated based on occupancy.</p>
+                            <div class="recommendation-actions">
+                                <button class="btn-primary" onclick="applyRec(this)">Shop Now</button>
+                                <button class="btn-secondary">Calculate ROI</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="recommendation-impact">
+                        <div class="impact-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>55 kWh/month</span>
+                        </div>
+                        <div class="impact-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>ROI in 6 months</span>
+                        </div>
+                        <div class="impact-item">
+                            <i class="fas fa-star"></i>
+                            <span>Impact: 7.0/10</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recommendation-card priority-medium">
+                    <div class="recommendation-header">
+                        <div class="priority-badge medium">Medium Priority</div>
+                        <div class="savings-amount">Save ₹5/month</div>
+                    </div>
+                    <div class="recommendation-content">
+                        <div class="recommendation-icon">
+                            <i class="fas fa-plug"></i>
+                        </div>
+                        <div class="recommendation-details">
+                            <h3>Eliminate Phantom Power</h3>
+                            <p>Devices in standby mode consume 0.3 kW continuously. Use smart plugs to automatically cut power when not in use.</p>
+                            <div class="recommendation-actions">
+                                <button class="btn-primary" onclick="applyRec(this)">Enable Auto-Off</button>
+                                <button class="btn-secondary">View Devices</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="recommendation-impact">
+                        <div class="impact-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>35 kWh/month</span>
+                        </div>
+                        <div class="impact-item">
+                            <i class="fas fa-percentage"></i>
+                            <span>8% reduction</span>
+                        </div>
+                        <div class="impact-item">
+                            <i class="fas fa-star"></i>
+                            <span>Impact: 6.2/10</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recommendation-card priority-low">
+                    <div class="recommendation-header">
+                        <div class="priority-badge low">Low Priority</div>
+                        <div class="savings-amount">Save ₹2/month</div>
+                    </div>
+                    <div class="recommendation-content">
+                        <div class="recommendation-icon">
+                            <i class="fas fa-temperature-low"></i>
+                        </div>
+                        <div class="recommendation-details">
+                            <h3>Optimize Refrigerator Temperature</h3>
+                            <p>Your fridge is set to 2°C. Adjusting to 4°C maintains food safety while reducing energy consumption by 10%.</p>
+                            <div class="recommendation-actions">
+                                <button class="btn-primary" onclick="applyRec(this)">Adjust Settings</button>
+                                <button class="btn-secondary">More Info</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="recommendation-impact">
+                        <div class="impact-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>15 kWh/month</span>
+                        </div>
+                        <div class="impact-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Easy to implement</span>
+                        </div>
+                        <div class="impact-item">
+                            <i class="fas fa-star"></i>
+                            <span>Impact: 4.5/10</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-trophy"></i> Achievements</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="achievements-list">
+                            <div class="achievement-item unlocked">
+                                <i class="fas fa-medal"></i>
+                                <div>
+                                    <h4>Energy Saver</h4>
+                                    <p>Reduced consumption by 15%</p>
+                                </div>
+                            </div>
+                            <div class="achievement-item unlocked">
+                                <i class="fas fa-star"></i>
+                                <div>
+                                    <h4>Week Streak</h4>
+                                    <p>7 days below target</p>
+                                </div>
+                            </div>
+                            <div class="achievement-item locked">
+                                <i class="fas fa-lock"></i>
+                                <div>
+                                    <h4>Eco Warrior</h4>
+                                    <p>Save 100 kg CO₂</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-bar"></i> Savings Progress</h3>
+                    </div>
+                    <div class="card-body" style="position:relative;">
+                        <div class="progress-container">
+                            <div class="progress-header">
+                                <span>Monthly Goal</span>
+                                <span>₹12 / ₹15</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 80%;"></div>
+                            </div>
+                            <p class="progress-text">80% complete - You're doing great!</p>
+                        </div>
+                        <div style="height:160px; position:relative;">
+                            <canvas id="savingsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="config.js"></script>
+    <script src="login.js"></script>
+    <script>requireAuth();</script>
+    <script src="recommendations.js"></script>
+</body>
+</html>

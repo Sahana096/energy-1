@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - EnergyAI Admin</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .user-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            transition: transform 0.2s;
+        }
+        .user-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary-color);
+        }
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FFD700, #b8960c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #000;
+            font-weight: bold;
+        }
+        .user-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        .user-stat {
+            text-align: center;
+        }
+        .user-stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        .user-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        .badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .badge-admin {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+        }
+        .badge-user {
+            background: rgba(79, 172, 254, 0.2);
+            color: #4facfe;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <h2>EnergyAI</h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="predictions.html" class="nav-item">
+                    <i class="fas fa-brain"></i>
+                    <span>AI Predictions</span>
+                </a>
+                <a href="devices.html" class="nav-item">
+                    <i class="fas fa-plug"></i>
+                    <span>Devices</span>
+                </a>
+                <a href="recommendations.html" class="nav-item">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Recommendations</span>
+                </a>
+                <a href="carbon.html" class="nav-item">
+                    <i class="fas fa-leaf"></i>
+                    <span>Carbon Footprint</span>
+                </a>
+                <a href="users.html" class="nav-item active">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <h1 style="font-size:1.5rem;"><i class="fas fa-users-cog"></i> User Management</h1>
+                    <p class="subtitle" style="font-size:0.85rem;">View all registered users and their activity</p>
+                </div>
+                <div class="header-right">
+                    <span id="userName" style="color:#FFD700; font-weight:bold;"></span>
+                    <button onclick="logout()" class="btn-secondary">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </header>
+
+            <section class="analytics-section">
+                <div class="card full-width">
+                    <div class="card-header">
+                        <h3 style="font-size:1rem;"><i class="fas fa-user-friends"></i> Registered Users</h3>
+                        <span id="totalUsers" style="font-size:0.85rem; color:#aaaaaa;">Loading...</span>
+                    </div>
+                    <div class="card-body">
+                        <div id="usersList">
+                            <p style="color:#666; text-align:center; padding:2rem;">Loading users...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="login.js"></script>
+    <script>requireAdmin();</script>
+    <script>
+        async function loadUsers() {
+            try {
+                const res  = await fetch(`${API_BASE}/auth/users`, { headers: getAuthHeaders() });
+                const json = await res.json();
+
+                if (!json.success) {
+                    document.getElementById('usersList').innerHTML =
+                        '<p style="color:#ff6b35;text-align:center;padding:2rem;">Access denied. Admin only.</p>';
+                    return;
+                }
+
+                const { users, totalUsers } = json.data;
+                document.getElementById('totalUsers').textContent = `${totalUsers} user(s)`;
+
+                document.getElementById('usersList').innerHTML = users.map(user => {
+                    const initial      = user.name.charAt(0).toUpperCase();
+                    const badgeClass   = user.role === 'admin' ? 'badge-admin' : 'badge-user';
+                    const registered   = new Date(user.createdAt).toLocaleDateString();
+                    return `
+                        <div class="user-card">
+                            <div class="user-header">
+                                <div class="user-info">
+                                    <div class="user-avatar">${initial}</div>
+                                    <div>
+                                        <h3 style="font-size:1.1rem;margin-bottom:0.25rem;">${user.name}</h3>
+                                        <p style="color:#aaaaaa;font-size:0.85rem;margin:0;">${user.email}</p>
+                                    </div>
+                                </div>
+                                <span class="badge ${badgeClass}">${user.role.toUpperCase()}</span>
+                            </div>
+                            <div class="user-stats">
+                                <div class="user-stat">
+                                    <div class="user-stat-value">${user.stats.energyRecords}</div>
+                                    <div class="user-stat-label">Energy Records</div>
+                                </div>
+                                <div class="user-stat">
+                                    <div class="user-stat-value">${user.stats.devices}</div>
+                                    <div class="user-stat-label">Devices</div>
+                                </div>
+                                <div class="user-stat">
+                                    <div class="user-stat-value">${registered}</div>
+                                    <div class="user-stat-label">Registered</div>
+                                </div>
+                            </div>
+                        </div>`;
+                }).join('');
+            } catch (e) {
+                document.getElementById('usersList').innerHTML =
+                    '<p style="color:#ff6b35;text-align:center;padding:2rem;">Error loading users: ' + e.message + '</p>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadUsers);
+    </script>
+</body>
+</html>

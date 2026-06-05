@@ -1,0 +1,53 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start ML Service",
+      "type": "shell",
+      "command": "python app.py",
+      "options": {
+        "cwd": "C:\\Users\\chava\\OneDrive\\Documents\\Desktop\\energy monitoring .final\\energy monitoring\\ml-service"
+      },
+      "presentation": {
+        "panel": "new",
+        "reveal": "always"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Start Backend",
+      "type": "shell",
+      "command": "node server.js",
+      "options": {
+        "cwd": "C:\\Users\\chava\\OneDrive\\Documents\\Desktop\\energy monitoring .final\\energy monitoring\\backend"
+      },
+      "presentation": {
+        "panel": "new",
+        "reveal": "always"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Start Frontend",
+      "type": "shell",
+      "command": "npx http-server -p 8000 -c-1",
+      "options": {
+        "cwd": "C:\\Users\\chava\\OneDrive\\Documents\\Desktop\\energy monitoring .final\\energy monitoring\\frontend"
+      },
+      "presentation": {
+        "panel": "new",
+        "reveal": "always"
+      },
+      "group": "build"
+    },
+    {
+      "label": "Start All Services",
+      "dependsOn": ["Start ML Service", "Start Backend", "Start Frontend"],
+      "dependsOrder": "parallel",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}

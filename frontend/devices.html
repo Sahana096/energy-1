@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devices - Smart Energy Monitor</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <h2>EnergyAI</h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="analytics.html" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="predictions.html" class="nav-item">
+                    <i class="fas fa-brain"></i>
+                    <span>AI Predictions</span>
+                </a>
+                <a href="devices.html" class="nav-item active">
+                    <i class="fas fa-plug"></i>
+                    <span>Devices</span>
+                </a>
+                <a href="recommendations.html" class="nav-item">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Recommendations</span>
+                </a>
+                <a href="carbon.html" class="nav-item">
+                    <i class="fas fa-leaf"></i>
+                    <span>Carbon Footprint</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <h1 style="font-size:1.5rem;">Device Management</h1>
+                    <p class="subtitle" style="font-size:0.85rem;">Monitor and control all connected devices</p>
+                </div>
+                <div class="header-right">
+                    <button class="btn-primary" onclick="showAddDeviceModal()">
+                        <i class="fas fa-plus"></i> Add Device
+                    </button>
+                    <div class="user-profile">
+                        <span id="userName">Welcome, User</span>
+                    </div>
+                    <button onclick="logout()" style="background:none;border:1px solid #2a2a2a;color:#aaaaaa;padding:0.5rem 1rem;border-radius:0.5rem;cursor:pointer;font-size:0.85rem;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </header>
+
+            <section class="devices-grid" id="devicesGrid">
+                <!-- Devices will be loaded dynamically -->
+            </section>
+        </main>
+    </div>
+
+    <!-- Add Device Modal -->
+    <div id="addDeviceModal" style="display:none; position:fixed; inset:0; z-index:10000; background:rgba(0,0,0,0.8); align-items:center; justify-content:center;">
+        <div style="background:#111; border:1px solid #2a2a2a; border-radius:1rem; padding:2rem; max-width:500px; width:90%;">
+            <h2 style="font-size:1.5rem; margin-bottom:1.5rem; color:#FFD700;">
+                <i class="fas fa-plus-circle"></i> Add New Device
+            </h2>
+            <form id="addDeviceForm">
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:0.85rem; color:#aaaaaa; margin-bottom:0.5rem;">Device Name *</label>
+                    <input type="text" id="deviceName" required placeholder="e.g., Air Conditioner" style="width:100%; padding:0.75rem; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:0.5rem; color:#fff; font-size:0.95rem;">
+                </div>
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:0.85rem; color:#aaaaaa; margin-bottom:0.5rem;">Location *</label>
+                    <input type="text" id="deviceLocation" required placeholder="e.g., Living Room" style="width:100%; padding:0.75rem; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:0.5rem; color:#fff; font-size:0.95rem;">
+                </div>
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label style="display:block; font-size:0.85rem; color:#aaaaaa; margin-bottom:0.5rem;">Power Rating (kW) *</label>
+                    <input type="number" id="devicePower" required step="0.01" min="0.01" placeholder="e.g., 1.5" style="width:100%; padding:0.75rem; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:0.5rem; color:#fff; font-size:0.95rem;">
+                </div>
+                <div class="form-group" style="margin-bottom:1.5rem;">
+                    <label style="display:block; font-size:0.85rem; color:#aaaaaa; margin-bottom:0.5rem;">Icon</label>
+                    <select id="deviceIcon" style="width:100%; padding:0.75rem; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:0.5rem; color:#fff; font-size:0.95rem;">
+                        <option value="plug">🔌 Plug (Default)</option>
+                        <option value="snowflake">❄️ Air Conditioner</option>
+                        <option value="tv">📺 TV</option>
+                        <option value="blender">🧊 Refrigerator</option>
+                        <option value="fire">🔥 Heater</option>
+                        <option value="lightbulb">💡 Light</option>
+                        <option value="laptop">💻 Laptop</option>
+                        <option value="desktop">🖥️ Desktop</option>
+                        <option value="tint">💧 Washing Machine</option>
+                        <option value="fan">🌀 Fan</option>
+                    </select>
+                </div>
+                <div style="display:flex; gap:0.75rem;">
+                    <button type="submit" style="flex:1; padding:0.75rem; background:linear-gradient(135deg,#FFD700,#b8960c); color:#000; border:none; border-radius:0.5rem; font-weight:bold; cursor:pointer; font-size:0.95rem;">
+                        <i class="fas fa-check"></i> Add Device
+                    </button>
+                    <button type="button" onclick="closeAddDeviceModal()" style="flex:1; padding:0.75rem; background:#1a1a1a; color:#aaa; border:1px solid #2a2a2a; border-radius:0.5rem; cursor:pointer; font-size:0.95rem;">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="config.js"></script>
+    <script src="login.js"></script>
+    <script>requireAuth();</script>
+    <script src="devices.js"></script>
+</body>
+</html>
