@@ -6,7 +6,12 @@ import numpy as np
 from datetime import datetime, timedelta
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import tensorflow as tf
+try:
+    import tensorflow as tf
+    TF_AVAILABLE = True
+except ImportError:
+    TF_AVAILABLE = False
+    print('[TF] TensorFlow not installed — LSTM endpoints disabled')
 
 # OCR imports — graceful fallback if not installed
 try:
@@ -42,7 +47,8 @@ def _load():
         # Load LSTM artifacts if available
         if os.path.exists(LSTM_MODEL_PATH):
             try:
-                _bundle['lstm_model'] = tf.keras.models.load_model(LSTM_MODEL_PATH)
+                if TF_AVAILABLE:
+                    _bundle['lstm_model'] = tf.keras.models.load_model(LSTM_MODEL_PATH)
             except Exception as e:
                 print('Failed to load LSTM model:', e)
         if os.path.exists(LSTM_SCALER_PATH):
