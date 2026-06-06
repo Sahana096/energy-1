@@ -23,40 +23,30 @@ const uploadFile = async (req, res) => {
     }
 
     const ext = path.extname(req.file.originalname).toLowerCase();
-    
-    // If it's a CSV file, import it as energy data
+
+    // If it's a CSV file, parse from buffer (memory storage)
     if (ext === '.csv') {
       try {
         const results = [];
         const errors = [];
         let rowCount = 0;
 
-        const firstLine = await new Promise((resolve) => {
-          const stream = fs.createReadStream(req.file.path, { encoding: 'utf8' });
-          let data = '';
-          stream.on('data', chunk => {
-            data += chunk;
-            const nlIndex = data.indexOf('\n');
-            if (nlIndex !== -1) {
-              stream.destroy();
-              resolve(data.substring(0, nlIndex));
-            }
-          });
-          stream.on('end', () => resolve(data));
-        });
+        const csvContent = req.file.buffer.toString('utf8');
+        const firstLine = csvContent.split('\n')[0] || '';
         const separator = firstLine.includes(';') ? ';' : ',';
 
         await new Promise((resolve, reject) => {
-          fs.createReadStream(req.file.path)
+          const { Readable } = require('stream');
+          const stream = Readable.from([csvContent]);
+          stream
             .pipe(csv({ separator, mapHeaders: ({ header }) => header.trim().replace(/^\uFEFF/, '') }))
             .on('data', (data) => {
               rowCount++;
-              // Normalize keys to handle BOM and case variations
               const normalized = {};
               Object.entries(data).forEach(([k, v]) => {
                 normalized[k.trim().replace(/^\uFEFF/, '').toLowerCase()] = v;
               });
-              const dateVal = normalized.date || normalized['date'];
+              const dateVal   = normalized.date;
               const energyVal = normalized.energyconsumed || normalized['energy consumed'] || normalized.kwh || normalized.energy || normalized.global_active_power;
               const deviceVal = normalized.device || normalized['device name'] || 'Unknown';
 
@@ -70,10 +60,9 @@ const uploadFile = async (req, res) => {
                 const parts = dateStr.split('/');
                 dateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
               }
-              if (normalized.time) {
-                dateStr += `T${normalized.time}`;
-              }
-              const parsedDate = new Date(dateStr);
+              if (normalized.time) dateStr += `T${normalized.time}`;
+
+              const parsedDate   = new Date(dateStr);
               const parsedEnergy = parseFloat(energyVal);
 
               if (isNaN(parsedDate.getTime()) || isNaN(parsedEnergy)) {
@@ -88,19 +77,14 @@ const uploadFile = async (req, res) => {
                 device: String(deviceVal).trim()
               });
             })
-            .on('end', () => resolve())
-            .on('error', (err) => reject(err));
+            .on('end', resolve)
+            .on('error', reject);
         });
 
-        // Clean up uploaded CSV file after parsing
         if (results.length > 0) {
-          fs.unlinkSync(req.file.path);
           await EnergyUsage.insertMany(results);
-
-          // Clear cached predictions so they regenerate with new data
           const Prediction = require('../models/Prediction');
           await Prediction.deleteMany({ userId: req.user.userId });
-          
           return res.status(201).json({
             success: true,
             message: `CSV imported successfully! ${results.length} energy records added to your dashboard.`,
@@ -109,17 +93,6 @@ const uploadFile = async (req, res) => {
             errors: errors.slice(0, 10)
           });
         } else {
-          // If no valid rows, just store the file
-          const upload = await DataUpload.create({
-            userId: req.user.userId,
-            originalName: req.file.originalname,
-            filename: req.file.filename,
-            fileType: 'text/csv',
-            fileSize: req.file.size,
-            filePath: req.file.path,
-            description: req.body.description || ''
-          });
-
           return res.status(201).json({
             success: true,
             message: 'CSV file stored. No valid energy data found. Expected columns: date, energyConsumed, device',
@@ -128,34 +101,19 @@ const uploadFile = async (req, res) => {
         }
       } catch (csvError) {
         console.error('CSV processing error:', csvError);
-        // If CSV processing fails, store it as a regular file
-        const upload = await DataUpload.create({
-          userId: req.user.userId,
-          originalName: req.file.originalname,
-          filename: req.file.filename,
-          fileType: 'text/csv',
-          fileSize: req.file.size,
-          filePath: req.file.path,
-          description: req.body.description || ''
-        });
-
-        return res.status(201).json({
-          success: true,
-          message: 'CSV file stored (processing failed)',
-          error: csvError.message
-        });
+        return res.status(500).json({ success: false, message: 'CSV processing failed: ' + csvError.message });
       }
     }
 
-    // For non-CSV files (images), just store them
+    // For non-CSV files (images), store metadata only
     const upload = await DataUpload.create({
-      userId: req.user.userId,
+      userId:       req.user.userId,
       originalName: req.file.originalname,
-      filename: req.file.filename,
-      fileType: normalizeFileType(req.file.mimetype, req.file.originalname),
-      fileSize: req.file.size,
-      filePath: req.file.path,
-      description: req.body.description || ''
+      filename:     req.file.originalname,
+      fileType:     normalizeFileType(req.file.mimetype, req.file.originalname),
+      fileSize:     req.file.size,
+      filePath:     'memory',
+      description:  req.body.description || ''
     });
 
     res.status(201).json({
@@ -244,15 +202,14 @@ const ocrBillImage = async (req, res) => {
 
     const ext = path.extname(req.file.originalname).toLowerCase();
     if (!['.jpg', '.jpeg', '.png'].includes(ext)) {
-      fs.unlinkSync(req.file.path);
       return res.status(400).json({ success: false, message: 'Only JPG and PNG images are supported for OCR' });
     }
 
-    // Forward image to Python ML service for OCR
+    // Forward image buffer to Python ML service for OCR
     let ocrResult = null;
     try {
       const form = new FormData();
-      form.append('image', fs.createReadStream(req.file.path), {
+      form.append('image', req.file.buffer, {
         filename: req.file.originalname,
         contentType: req.file.mimetype
       });
@@ -261,21 +218,19 @@ const ocrBillImage = async (req, res) => {
         timeout: 30000
       });
       ocrResult = mlRes.data;
-      console.log('[OCR] ML service result:', JSON.stringify(ocrResult).substring(0, 300));
     } catch (mlErr) {
       console.warn('[OCR] ML service error:', mlErr.message);
-      // If ML service is down, do OCR directly in Node using the raw_text approach
       ocrResult = null;
     }
 
-    // Save the upload record
+    // Save upload record (no file path needed with memory storage)
     const upload = await DataUpload.create({
       userId:       req.user.userId,
       originalName: req.file.originalname,
-      filename:     req.file.filename,
+      filename:     req.file.originalname,
       fileType:     normalizeFileType(req.file.mimetype, req.file.originalname),
       fileSize:     req.file.size,
-      filePath:     req.file.path,
+      filePath:     'memory',
       description:  req.body.description || 'Bill image'
     });
 
