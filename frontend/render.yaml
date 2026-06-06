@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: energyai-frontend
+    runtime: static
+    staticPublishPath: .
+    buildCommand: echo "No build needed"
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
