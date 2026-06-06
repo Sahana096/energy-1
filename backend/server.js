@@ -31,7 +31,8 @@ const allowedOrigins = [
   'http://localhost:8000',
   'http://127.0.0.1:8000',
   'http://localhost:3000',
-  process.env.FRONTEND_URL  // set this in Render dashboard to your Netlify URL
+  'https://energy-frontend-dkaj.onrender.com',
+  process.env.FRONTEND_URL
 ].filter(Boolean);
 
 app.use(cors({
