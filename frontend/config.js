@@ -4,11 +4,11 @@
 const IS_PROD = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
 
 const API_BASE = IS_PROD
-    ? 'https://energyai-backend.onrender.com/api'   // ← replace with your Render backend URL
+    ? 'https://energyai-backend.onrender.com/api'
     : 'http://localhost:5000/api';
 
 const ML_BASE = IS_PROD
-    ? 'https://energyai-ml.onrender.com'            // ← replace with your Render ML URL
+    ? 'https://energy-ml.onrender.com'
     : 'http://localhost:5001';
 
 function getToken() {
